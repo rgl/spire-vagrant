@@ -1,0 +1,15 @@
+[Unit]
+Description=DevID Server
+After=network.service
+
+[Service]
+Type=simple
+User=devid-provisioning-server
+Group=devid-provisioning-server
+ExecStart=/opt/devid-provisioning-server/bin/devid-provisioning-server \
+    -config /opt/devid-provisioning-server/conf/devid-provisioning-server.conf
+WorkingDirectory=/opt/devid-provisioning-server
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

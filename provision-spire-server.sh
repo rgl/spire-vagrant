@@ -1,7 +1,7 @@
 #!/bin/bash
 source /vagrant/lib.sh
 
-spire_version="${1:-1.1.0}"; shift || true
+spire_version="${1:-1.1.1}"; shift || true
 trust_domain="$(hostname --domain)"
 
 # change to the home directory.
@@ -37,6 +37,8 @@ tar xf "$spire_tgz"
 install -d /opt/spire-server/bin
 install -d /opt/spire-server/conf
 install -m 755 spire-$spire_version/bin/spire-server /opt/spire-server/bin
+install -m 644 /vagrant/share/devid-provisioning-ca.pem /opt/spire-server/conf
+install -m 644 /vagrant/share/swtpm-localca-rootca.pem /opt/spire-server/conf
 install -m 644 /vagrant/spire-server.conf /opt/spire-server/conf
 install -m 644 /vagrant/spire-server.service /etc/systemd/system
 ln -s /opt/spire-server/bin/spire-server /usr/local/bin
@@ -54,10 +56,10 @@ spire-server bundle show >/vagrant/share/spire-trust-bundle.pem
 agents='agent0 agent1'
 for agent in $agents; do
     spire-server token generate -ttl "$(((12*60*60)))" -spiffeID "spiffe://$trust_domain/$agent" \
-        | perl -ne '/Token: (.+)/ && print $1' >/vagrant/share/join-token-$agent.txt
+        | perl -ne '/Token: (.+)/ && print $1' >/vagrant/share/$agent-join-token.txt
 done
 
-# register example workload SPIFFIE IDs.
+# register example workload SPIFFE IDs entries (for agents that use a join token to authenticate in spire-server).
 for uid in 0 1000; do
     for agent in $agents; do
         spire-server entry create \

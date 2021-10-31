@@ -30,6 +30,8 @@ Vagrant.configure('2') do |config|
       libvirt__dhcp_enabled: false,
       libvirt__forward_mode: 'none'
     config.vm.provision :shell, path: 'provision-base.sh'
+    config.vm.provision :shell, path: 'provision-go.sh'
+    config.vm.provision :shell, path: 'provision-devid-provisioning-server.sh'
     config.vm.provision :shell, path: 'provision-spire-server.sh'
   end
 
@@ -40,10 +42,38 @@ Vagrant.configure('2') do |config|
     config.vm.define name do |config|
       config.vm.hostname = "#{name}.#{CONFIG_DNS_DOMAIN}"
       config.vm.provider :libvirt do |lv, config|
+        lv.tpm_type = 'emulator'
+        lv.tpm_model = 'tpm-crb'
+        lv.tpm_version = '2.0'
         config.vm.network :private_network, ip: ip
+        config.vm.provision :hosts do |hosts|
+          hosts.autoconfigure = true
+          hosts.sync_hosts = true
+          hosts.add_localhost_hostnames = false
+          hosts.add_host CONFIG_SERVER_IP, ["server.#{CONFIG_DNS_DOMAIN}"]
+        end
         config.vm.provision :shell, path: 'provision-base.sh'
+        config.vm.provision :shell, path: 'provision-devid-provisioning-agent.sh'
         config.vm.provision :shell, path: 'provision-spire-agent.sh'
       end
     end
+  end
+
+  config.trigger.before :up do |trigger|
+    trigger.only_on = 'server'
+    trigger.run = {
+      inline: '''bash -euc \'
+mkdir -p share
+artifacts=(
+  "/var/lib/swtpm-localca/issuercert.pem swtpm-localca-rootca.pem"
+)
+for artifact in "${artifacts[@]}"; do
+  echo "$artifact" | while read artifact path; do
+    cp "$artifact" "share/$path"
+  done
+done
+\'
+'''
+    }
   end
 end

@@ -1,7 +1,7 @@
 #!/bin/bash
 source /vagrant/lib.sh
 
-spire_version="${1:-1.1.0}"; shift || true
+spire_version="${1:-1.1.1}"; shift || true
 
 # change to the home directory.
 cd ~
@@ -24,6 +24,7 @@ adduser \
     --ingroup spire-agent \
     --home /opt/spire-agent \
     spire-agent
+usermod -aG tss spire-agent
 install -d -o spire-agent -g spire-agent -m 755 /opt/spire-agent
 
 # download and install.
@@ -37,9 +38,9 @@ install -d /opt/spire-agent/bin
 install -d /opt/spire-agent/conf
 install -m 755 spire-$spire_version/bin/spire-agent /opt/spire-agent/bin
 install -o root -g spire-agent -m 640 /dev/null /opt/spire-agent/conf/environment
-cat >/opt/spire-agent/conf/environment <<EOF
-SPIRE_AGENT_JOIN_TOKEN=$(cat "/vagrant/share/join-token-$(hostname).txt")
-EOF
+#cat >/opt/spire-agent/conf/environment <<EOF
+#SPIRE_AGENT_JOIN_TOKEN=$(cat "/vagrant/share/join-token-$(hostname).txt")
+#EOF
 install -m 644 /vagrant/share/spire-trust-bundle.pem /opt/spire-agent/conf/spire-trust-bundle.pem
 install -m 644 /vagrant/spire-agent.conf /opt/spire-agent/conf
 install -m 644 /vagrant/spire-agent.service /etc/systemd/system
@@ -52,17 +53,6 @@ systemctl restart spire-agent
 # wait for the agent to be healthy.
 while [ "$(spire-agent healthcheck 2>/dev/null)" != 'Agent is healthy.' ]; do sleep 1; done
 
-# fetch a SVID for the current workload (a unix process running as uid 0).
-install -d -m 700 svid
-spire-agent api fetch x509 -write svid
-openssl x509 -in svid/svid.0.pem -text -noout
-openssl x509 -in svid/bundle.0.pem -text -noout
-
-# fetch a SVID for the current workload (a unix process running as uid 1000).
-su -l vagrant <<'EOF'
-set -x
-install -d -m 700 svid
-spire-agent api fetch x509 -write svid
-openssl x509 -in svid/svid.0.pem -text -noout
-openssl x509 -in svid/bundle.0.pem -text -noout
-EOF
+# show the spire-agent SVID.
+openssl x509 -inform der -in /opt/spire-agent/data/agent_svid.der -text -noout
+openssl x509 -inform der -in /opt/spire-agent/data/bundle.der -text -noout

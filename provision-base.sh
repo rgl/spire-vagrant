@@ -85,5 +85,6 @@ apt-get install -y httpie
 apt-get install -y jq
 apt-get install -y python3-tabulate python3-yaml
 apt-get install -y bash-completion
+apt-get install -y make
 apt-get install -y sqlite3
 apt-get install -y tpm2-tools

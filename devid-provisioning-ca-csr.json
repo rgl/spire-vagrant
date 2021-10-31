@@ -1,0 +1,12 @@
+{
+  "CN": "DevID Provisioning CA",
+  "key": {
+    "algo": "ecdsa",
+    "size": 256
+  },
+  "names": [
+    {
+      "O": "spire.test"
+    }
+  ]
+}

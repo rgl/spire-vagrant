@@ -6,7 +6,7 @@ After=network.service
 Type=simple
 User=spire-agent
 Group=spire-agent
-EnvironmentFile=/opt/spire-agent/conf/environment
+EnvironmentFile=-/opt/spire-agent/conf/environment
 ExecStart=/opt/spire-agent/bin/spire-agent \
     run \
     -config conf/spire-agent.conf \
