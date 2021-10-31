@@ -1,0 +1,18 @@
+[Unit]
+Description=SPIRE Agent
+After=network.service
+
+[Service]
+Type=simple
+User=spire-agent
+Group=spire-agent
+EnvironmentFile=/opt/spire-agent/conf/environment
+ExecStart=/opt/spire-agent/bin/spire-agent \
+    run \
+    -config conf/spire-agent.conf \
+    -joinToken ${SPIRE_AGENT_JOIN_TOKEN}
+WorkingDirectory=/opt/spire-agent
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

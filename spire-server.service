@@ -1,0 +1,16 @@
+[Unit]
+Description=SPIRE Server
+After=network.service
+
+[Service]
+Type=simple
+User=spire-server
+Group=spire-server
+ExecStart=/opt/spire-server/bin/spire-server \
+    run \
+    -config conf/spire-server.conf
+WorkingDirectory=/opt/spire-server
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
