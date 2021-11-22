@@ -20,7 +20,7 @@ Enter the `server` node and register the workloads entries:
 vagrant ssh server
 sudo -i
 
-# register example workload SPIFFE IDs entries (for agents that use
+# register example unix workload SPIFFE IDs entries (for agents that use
 # a TPM DevID to authenticate in spire-server).
 trust_domain="$(hostname --domain)"
 for uid in 0 1000; do
@@ -32,7 +32,23 @@ for uid in 0 1000; do
     done
 done
 
-# show all 
+# register example docker workload SPIFFE IDs entries (for agents that use
+# a TPM DevID to authenticate in spire-server).
+trust_domain="$(hostname --domain)"
+for agent_spiffe_id_path in /vagrant/share/*-spiffe-id.txt; do
+    spire-server entry create \
+        -parentID "$(cat "$agent_spiffe_id_path")" \
+        -spiffeID "spiffe://$trust_domain/example-server" \
+        -selector 'docker:label:com.docker.compose.project:example-docker-workload' \
+        -selector 'docker:label:com.docker.compose.service:server'
+    spire-server entry create \
+        -parentID "$(cat "$agent_spiffe_id_path")" \
+        -spiffeID "spiffe://$trust_domain/example-client" \
+        -selector 'docker:label:com.docker.compose.project:example-docker-workload' \
+        -selector 'docker:label:com.docker.compose.service:client'
+done
+
+# show all
 spire-server entry show
 
 # exit the node.
@@ -63,10 +79,38 @@ exit
 exit
 ```
 
+Enter the `agent0` node and execute an example docker worload:
+
+```bash
+vagrant ssh agent0
+
+# build and run example docker workload.
+cd /vagrant/example-docker-workload
+docker compose up
+```
+
+In another shell, enter the `agent0` node try the example docker worload:
+
+```bash
+vagrant ssh agent0
+
+# use example docker workload to see their SPIFFE IDs.
+http localhost:8080
+
+# dump the example server workload certificate.
+# NB this will be a certificate for the server SPIFFE ID (e.g.
+#    spiffe://spire.test/example-server) URI X509 SAN (Subject
+#    Alternative Name). To include a DNS X509 SAN you would have to register
+#    the workload with, e.g., -dns example-server.spire.test.
+trust_domain="$(hostname --domain)"
+openssl s_client -connect localhost:8443 -servername $trust_domain </dev/null 2>/dev/null | openssl x509 -noout -text
+```
+
 # Notes
 
 * The initial SPIFFE trust bundle must be distributed to the nodes using some out-of-band method.
 * An agent SPIFFE ID can only be known after the devid-provisioning-agent provisions the TPM DevID.
+* A workload can have one or more SPIFFE IDs, like the [example-docker-workload](example-docker-workload), which will have the IDs: `spiffe://spire.test/user-0` and `spiffe://spire.test/example-server` (or `spiffe://spire.test/example-client`).
 
 # Reference
 
@@ -81,3 +125,4 @@ exit
   * [TPM 2.0 Keys for Device Identity and Attestation](https://trustedcomputinggroup.org/wp-content/uploads/TCG_IWG_DevID_v1r2_02dec2020.pdf)
   * [devid-provisioning-tool](https://github.com/HewlettPackard/devid-provisioning-tool)
 * [Docker Workload Attestor](https://github.com/spiffe/spire/blob/v1.1.1/doc/plugin_agent_workloadattestor_docker.md)
+* [go-spiffe spiffe-http example](https://github.com/spiffe/go-spiffe/tree/v2.0.0-beta.10/v2/examples/spiffe-http)
