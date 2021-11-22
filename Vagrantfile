@@ -53,6 +53,8 @@ Vagrant.configure('2') do |config|
           hosts.add_host CONFIG_SERVER_IP, ["server.#{CONFIG_DNS_DOMAIN}"]
         end
         config.vm.provision :shell, path: 'provision-base.sh'
+        config.vm.provision :shell, path: 'provision-docker.sh'
+        config.vm.provision :shell, path: 'provision-docker-compose.sh'
         config.vm.provision :shell, path: 'provision-devid-provisioning-agent.sh'
         config.vm.provision :shell, path: 'provision-spire-agent.sh'
       end

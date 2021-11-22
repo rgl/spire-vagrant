@@ -25,6 +25,7 @@ adduser \
     --home /opt/spire-agent \
     spire-agent
 usermod -aG tss spire-agent
+usermod -aG docker spire-agent
 install -d -o spire-agent -g spire-agent -m 755 /opt/spire-agent
 
 # download and install.

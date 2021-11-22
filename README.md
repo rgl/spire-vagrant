@@ -80,3 +80,4 @@ exit
   * [Hints about testing the DevID Node Attestator](https://github.com/spiffe/spire/pull/2111#issuecomment-811967536)
   * [TPM 2.0 Keys for Device Identity and Attestation](https://trustedcomputinggroup.org/wp-content/uploads/TCG_IWG_DevID_v1r2_02dec2020.pdf)
   * [devid-provisioning-tool](https://github.com/HewlettPackard/devid-provisioning-tool)
+* [Docker Workload Attestor](https://github.com/spiffe/spire/blob/v1.1.1/doc/plugin_agent_workloadattestor_docker.md)
