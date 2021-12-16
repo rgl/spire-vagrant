@@ -2,10 +2,10 @@
 set -euxo pipefail
 
 # install go.
-# see https://golang.org/dl/
-# see https://golang.org/doc/install
-artifact_url=https://golang.org/dl/go1.17.3.linux-amd64.tar.gz
-artifact_sha=550f9845451c0c94be679faf116291e7807a8d78b43149f9506c1b15eb89008c
+# see https://go.dev/dl/
+# see https://go.dev/doc/install
+artifact_url=https://go.dev/dl/go1.17.5.linux-amd64.tar.gz
+artifact_sha=bd78114b0d441b029c8fe0341f4910370925a4d270a6a590668840675b0c653e
 artifact_path="/tmp/$(basename $artifact_url)"
 wget -qO $artifact_path $artifact_url
 if [ "$(sha256sum $artifact_path | awk '{print $1}')" != "$artifact_sha" ]; then
