@@ -47,7 +47,7 @@ systemctl enable spire-server
 systemctl restart spire-server
 
 # wait for the server to be healthy.
-while [ "$(spire-server healthcheck 2>/dev/null)" != 'Server is healthy.' ]; do sleep 1; done
+bash -euo pipefail -c "while [ \"\$(spire-server healthcheck 2>/dev/null)\" != 'Server is healthy.' ]; do sleep 1; done"
 
 # share the trust bundle.
 spire-server bundle show >/vagrant/share/spire-trust-bundle.pem

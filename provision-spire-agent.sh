@@ -52,7 +52,7 @@ systemctl enable spire-agent
 systemctl restart spire-agent
 
 # wait for the agent to be healthy.
-while [ "$(spire-agent healthcheck 2>/dev/null)" != 'Agent is healthy.' ]; do sleep 1; done
+bash -euo pipefail -c "while [ \"\$(spire-agent healthcheck 2>/dev/null)\" != 'Agent is healthy.' ]; do sleep 1; done"
 
 # show the spire-agent SVID.
 openssl x509 -inform der -in /opt/spire-agent/data/agent_svid.der -text -noout
