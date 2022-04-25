@@ -1,6 +1,6 @@
 module client
 
-go 1.17
+go 1.18
 
 require github.com/spiffe/go-spiffe/v2 v2.0.0
 
