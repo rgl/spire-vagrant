@@ -1,7 +1,7 @@
 #!/bin/bash
 source /vagrant/lib.sh
 
-spire_version="${1:-1.1.2}"; shift || true
+spire_version="${1:-1.1.4}"; shift || true
 trust_domain="$(hostname --domain)"
 
 # change to the home directory.

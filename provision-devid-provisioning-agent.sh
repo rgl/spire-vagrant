@@ -26,7 +26,7 @@ chmod g+r devid/*
 openssl x509 -in devid/devid-crt.pem -text -noout
 
 # show the SPIFFE ID.
-# see https://github.com/spiffe/spire/blob/v1.1.2/doc/plugin_agent_nodeattestor_tpm_devid.md
+# see https://github.com/spiffe/spire/blob/v1.1.4/doc/plugin_agent_nodeattestor_tpm_devid.md
 devid_fingerprint="$(openssl x509 -in devid/devid-crt.pem -outform der | openssl dgst -sha1 -hex -r | awk '{print $1}')"
 spiffe_id="spiffe://$trust_domain/spire/agent/tpm_devid/$devid_fingerprint"
 echo -n "$spiffe_id" >"/vagrant/share/$(hostname)-spiffe-id.txt"
