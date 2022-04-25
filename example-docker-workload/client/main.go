@@ -31,7 +31,7 @@ func getCertificateText(der []byte) (string, error) {
 
 func callServer(source *workloadapi.X509Source) string {
 	serverURL := "https://server"
-	serverID := spiffeid.Must("spire.test", "example-server")
+	serverID := spiffeid.RequireFromString("spiffe://spire.test/example-server")
 
 	// configure mTLS between this workload and the serverID workload.
 	tlsConfig := tlsconfig.MTLSClientConfig(source, source, tlsconfig.AuthorizeID(serverID))

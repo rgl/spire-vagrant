@@ -2,7 +2,7 @@ module server
 
 go 1.17
 
-require github.com/spiffe/go-spiffe/v2 v2.0.0-beta.10
+require github.com/spiffe/go-spiffe/v2 v2.0.0
 
 require (
 	github.com/golang/protobuf v1.4.2 // indirect
