@@ -64,7 +64,7 @@ Vagrant.configure('2') do |config|
   config.trigger.before :up do |trigger|
     trigger.only_on = 'server'
     trigger.run = {
-      inline: '''bash -euc \'
+      inline: '''bash -euo pipefail -c \'
 mkdir -p share
 artifacts=(
   "/var/lib/swtpm-localca/issuercert.pem swtpm-localca-rootca.pem"
