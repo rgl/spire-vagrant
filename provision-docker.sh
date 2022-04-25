@@ -1,7 +1,8 @@
 #!/bin/bash
 set -euxo pipefail
 
-docker_version='20.10.11'
+# see https://github.com/moby/moby/releases
+docker_version='20.10.14'
 
 # prevent apt-get et al from asking questions.
 # NB even with this, you'll still get some warnings that you can ignore:
@@ -27,6 +28,9 @@ cat >/etc/docker/daemon.json <<'EOF'
 {
     "experimental": false,
     "debug": false,
+    "features": {
+        "buildkit": true
+    },
     "log-driver": "journald",
     "labels": [
         "os=linux"
