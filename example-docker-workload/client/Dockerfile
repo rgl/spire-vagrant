@@ -1,5 +1,5 @@
 #syntax=docker/dockerfile:1.4
-FROM golang:1.18.1-bullseye AS build
+FROM golang:1.18.2-bullseye AS build
 WORKDIR /build
 COPY go.* ./
 RUN go mod download
