@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 # see https://github.com/moby/moby/releases
-docker_version='20.10.14'
+docker_version='20.10.16'
 
 # prevent apt-get et al from asking questions.
 # NB even with this, you'll still get some warnings that you can ignore:
