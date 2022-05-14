@@ -2,6 +2,8 @@
 source /vagrant/lib.sh
 
 spire_version="${1:-1.3.0}"; shift || true
+ubuntu_agent_count="${1:-1}"; shift || true
+windows_agent_count="${1:-1}"; shift || true
 trust_domain="$(hostname --domain)"
 
 # change to the home directory.
@@ -53,18 +55,31 @@ bash -euo pipefail -c "while [ \"\$(spire-server healthcheck 2>/dev/null)\" != '
 spire-server bundle show >/vagrant/share/spire-trust-bundle.pem
 
 # generate the agents join token.
-agents='agent0 agent1'
-for agent in $agents; do
+ubuntu_agents="$(seq -f 'uagent%g' 0 $((ubuntu_agent_count-1)))"
+windows_agents="$(seq -f 'wagent%g' 0 $((windows_agent_count-1)))"
+for agent in $ubuntu_agents $windows_agents; do
     spire-server token generate -ttl "$(((12*60*60)))" -spiffeID "spiffe://$trust_domain/$agent" \
         | perl -ne '/Token: (.+)/ && print $1' >/vagrant/share/$agent-join-token.txt
 done
 
-# register example workload SPIFFE IDs entries (for agents that use a join token to authenticate in spire-server).
+# register example ubuntu workload SPIFFE IDs entries (for agents that use
+# a join token to authenticate in spire-server).
 for uid in 0 1000; do
-    for agent in $agents; do
+    for agent in $ubuntu_agents; do
         spire-server entry create \
             -parentID "spiffe://$trust_domain/$agent" \
             -spiffeID "spiffe://$trust_domain/user-$uid" \
             -selector "unix:uid:$uid"
+    done
+done
+
+# register example windows workload SPIFFE IDs entries (for agents that use
+# a join token to authenticate in spire-server).
+for name in vagrant; do
+    for agent in $windows_agents; do
+        spire-server entry create \
+            -parentID "spiffe://$trust_domain/$agent" \
+            -spiffeID "spiffe://$trust_domain/user-$name" \
+            -selector "windows:user_name:${agent^^}\\$name"
     done
 done

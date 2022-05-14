@@ -2,14 +2,13 @@
 # have to force a --no-parallel execution.
 ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 
+CONFIG_SPIRE_VERSION = '1.3.0'
 CONFIG_DNS_DOMAIN = 'spire.test'
 CONFIG_SERVER_IP = '10.10.0.2'
-CONFIG_AGENT0_IP = '10.10.0.3'
-CONFIG_AGENT_COUNT = 1
+CONFIG_UBUNTU_AGENT_COUNT = 1   # max 5.
+CONFIG_WINDOWS_AGENT_COUNT = 1  # max 5.
 
 require 'ipaddr'
-
-agent_ip_addr = IPAddr.new CONFIG_AGENT0_IP
 
 Vagrant.configure('2') do |config|
   config.vm.box = 'ubuntu-20.04-amd64'
@@ -32,32 +31,57 @@ Vagrant.configure('2') do |config|
     config.vm.provision :shell, path: 'provision-base.sh'
     config.vm.provision :shell, path: 'provision-go.sh'
     config.vm.provision :shell, path: 'provision-devid-provisioning-server.sh'
-    config.vm.provision :shell, path: 'provision-spire-server.sh'
+    config.vm.provision :shell, path: 'provision-spire-server.sh', args: [CONFIG_SPIRE_VERSION, CONFIG_UBUNTU_AGENT_COUNT, CONFIG_WINDOWS_AGENT_COUNT]
   end
 
-  (0..CONFIG_AGENT_COUNT-1).each_with_index do |o, i|
-    name = "agent#{i}"
-    ip = agent_ip_addr.to_s()
-    agent_ip_addr = agent_ip_addr.succ()
+  (0..CONFIG_UBUNTU_AGENT_COUNT-1).each_with_index do |o, i|
+    name = "uagent#{i}"
+    ip = IPAddr.new((IPAddr.new CONFIG_SERVER_IP).to_i + 1 + i, Socket::AF_INET).to_s
     config.vm.define name do |config|
       config.vm.hostname = "#{name}.#{CONFIG_DNS_DOMAIN}"
       config.vm.provider :libvirt do |lv, config|
         lv.tpm_type = 'emulator'
         lv.tpm_model = 'tpm-crb'
         lv.tpm_version = '2.0'
-        config.vm.network :private_network, ip: ip
-        config.vm.provision :hosts do |hosts|
-          hosts.autoconfigure = true
-          hosts.sync_hosts = true
-          hosts.add_localhost_hostnames = false
-          hosts.add_host CONFIG_SERVER_IP, ["server.#{CONFIG_DNS_DOMAIN}"]
-        end
-        config.vm.provision :shell, path: 'provision-base.sh'
-        config.vm.provision :shell, path: 'provision-docker.sh'
-        config.vm.provision :shell, path: 'provision-docker-compose.sh'
-        config.vm.provision :shell, path: 'provision-devid-provisioning-agent.sh'
-        config.vm.provision :shell, path: 'provision-spire-agent.sh'
       end
+      config.vm.network :private_network, ip: ip
+      config.vm.provision :hosts do |hosts|
+        hosts.autoconfigure = true
+        hosts.sync_hosts = true
+        hosts.add_localhost_hostnames = false
+        hosts.add_host CONFIG_SERVER_IP, ["server.#{CONFIG_DNS_DOMAIN}"]
+      end
+      config.vm.provision :shell, path: 'provision-base.sh'
+      config.vm.provision :shell, path: 'provision-docker.sh'
+      config.vm.provision :shell, path: 'provision-docker-compose.sh'
+      config.vm.provision :shell, path: 'provision-devid-provisioning-agent.sh'
+      config.vm.provision :shell, path: 'provision-spire-agent.sh'
+    end
+  end
+
+  (0..CONFIG_WINDOWS_AGENT_COUNT-1).each_with_index do |o, i|
+    name = "wagent#{i}"
+    ip = IPAddr.new((IPAddr.new CONFIG_SERVER_IP).to_i + 1 + 5 + i, Socket::AF_INET).to_s
+    config.vm.define name do |config|
+      config.vm.box = 'windows-2022-amd64'
+      config.vm.hostname = name
+      config.vm.provider :libvirt do |lv, config|
+        lv.memory = 3*1024
+        lv.tpm_type = 'emulator'
+        lv.tpm_model = 'tpm-crb'
+        lv.tpm_version = '2.0'
+        config.vm.synced_folder '.', '/vagrant', type: 'smb', smb_username: ENV['USER'], smb_password: ENV['VAGRANT_SMB_PASSWORD']
+      end
+      config.vm.network :private_network, ip: ip
+      config.vm.provision :hosts do |hosts|
+        hosts.autoconfigure = true
+        hosts.sync_hosts = true
+        hosts.add_localhost_hostnames = false
+        hosts.add_host CONFIG_SERVER_IP, ["server.#{CONFIG_DNS_DOMAIN}"]
+      end
+      config.vm.provision :shell, path: 'windows/ps.ps1', args: 'provision-chocolatey.ps1'
+      config.vm.provision :shell, path: 'windows/ps.ps1', args: 'provision-base.ps1'
+      config.vm.provision :shell, path: 'windows/ps.ps1', args: ['provision-spire-agent.ps1', CONFIG_SPIRE_VERSION]
     end
   end
 

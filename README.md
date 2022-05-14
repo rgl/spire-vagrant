@@ -6,9 +6,9 @@ This is a [SPIFFE](https://spiffe.io/)/[SPIRE](https://github.com/spiffe/spire) 
 
 Install [swtpm](https://github.com/stefanberger/swtpm) as described at https://github.com/rgl/swtpm-vagrant.
 
-Install [Vagrant](https://github.com/hashicorp/vagrant), [vagrant-libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt), [vagrant-hosts](https://github.com/oscar-stack/vagrant-hosts), and the [Ubuntu 20.04 base box](https://github.com/rgl/ubuntu-vagrant).
+Install [Vagrant](https://github.com/hashicorp/vagrant), [vagrant-libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt), [vagrant-hosts](https://github.com/oscar-stack/vagrant-hosts), [Ubuntu 20.04 base box](https://github.com/rgl/ubuntu-vagrant), and [Windows Server 2022 base box](https://github.com/rgl/windows-vagrant).
 
-Start the SPIRE `server` and `agent`s nodes:
+Start the SPIRE `server`, the `uagent` (Ubuntu), and the `wagent` (Windows) agent nodes:
 
 ```bash
 vagrant up --no-destroy-on-error --no-tty
@@ -56,10 +56,10 @@ exit
 exit
 ```
 
-Enter the `agent0` node and fetch a worload SVID for the current user:
+Enter the `uagent0` node and fetch a worload SVID for the current user:
 
 ```bash
-vagrant ssh agent0
+vagrant ssh uagent0
 
 # fetch a SVID for the current workload (a unix process running as uid 1000).
 install -d -m 700 svid
@@ -79,20 +79,20 @@ exit
 exit
 ```
 
-Enter the `agent0` node and execute an example docker worload:
+Enter the `uagent0` node and execute an example docker worload:
 
 ```bash
-vagrant ssh agent0
+vagrant ssh uagent0
 
 # build and run example docker workload.
 cd /vagrant/example-docker-workload
 docker compose up
 ```
 
-In another shell, enter the `agent0` node try the example docker worload:
+In another shell, enter the `uagent0` node try the example docker worload:
 
 ```bash
-vagrant ssh agent0
+vagrant ssh uagent0
 
 # use example docker workload to see their SPIFFE IDs.
 http localhost:8080
