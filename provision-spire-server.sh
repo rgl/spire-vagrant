@@ -1,7 +1,7 @@
 #!/bin/bash
 source /vagrant/lib.sh
 
-spire_version="${1:-1.3.0}"; shift || true
+spire_version="${1:-1.3.1}"; shift || true
 ubuntu_agent_count="${1:-1}"; shift || true
 windows_agent_count="${1:-1}"; shift || true
 trust_domain="$(hostname --domain)"

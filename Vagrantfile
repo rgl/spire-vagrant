@@ -2,7 +2,7 @@
 # have to force a --no-parallel execution.
 ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 
-CONFIG_SPIRE_VERSION = '1.3.0'
+CONFIG_SPIRE_VERSION = '1.3.1'
 CONFIG_DNS_DOMAIN = 'spire.test'
 CONFIG_SERVER_IP = '10.10.0.2'
 CONFIG_UBUNTU_AGENT_COUNT = 1   # max 5.
