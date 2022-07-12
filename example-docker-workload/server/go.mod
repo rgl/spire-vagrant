@@ -2,7 +2,7 @@ module server
 
 go 1.18
 
-require github.com/spiffe/go-spiffe/v2 v2.1.0
+require github.com/spiffe/go-spiffe/v2 v2.1.1
 
 require (
 	github.com/Microsoft/go-winio v0.5.2 // indirect
