@@ -2,11 +2,15 @@
 
 This is a [SPIFFE](https://spiffe.io/)/[SPIRE](https://github.com/spiffe/spire) playground.
 
-# Usage (Ubuntu 20.04)
+# Usage (Ubuntu 22.04)
 
-Install [swtpm](https://github.com/stefanberger/swtpm) as described at https://github.com/rgl/swtpm-vagrant.
+Install [Vagrant](https://github.com/hashicorp/vagrant), [vagrant-libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt), [vagrant-hosts](https://github.com/oscar-stack/vagrant-hosts), [Ubuntu 22.04 base box](https://github.com/rgl/ubuntu-vagrant), and [Windows Server 2022 base box](https://github.com/rgl/windows-vagrant).
 
-Install [Vagrant](https://github.com/hashicorp/vagrant), [vagrant-libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt), [vagrant-hosts](https://github.com/oscar-stack/vagrant-hosts), [Ubuntu 20.04 base box](https://github.com/rgl/ubuntu-vagrant), and [Windows Server 2022 base box](https://github.com/rgl/windows-vagrant).
+Create the swtpm localca:
+
+```bash
+sudo bash provision-host-swtpm.sh
+```
 
 Start the SPIRE `server`, the `uagent` (Ubuntu), and the `wagent` (Windows) agent nodes:
 
