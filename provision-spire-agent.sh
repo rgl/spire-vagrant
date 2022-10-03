@@ -1,7 +1,7 @@
 #!/bin/bash
 source /vagrant/lib.sh
 
-spire_version="${1:-1.4.0}"; shift || true
+spire_version="${1:-1.4.2}"; shift || true
 
 # change to the home directory.
 cd ~

@@ -1,5 +1,5 @@
 param(
-    $spireVersion='1.4.0'
+    $spireVersion='1.4.2'
 )
 
 $serviceName = "spire-agent"
@@ -11,7 +11,7 @@ $joinToken = Get-Content -Raw "c:\vagrant\share\$($env:COMPUTERNAME.ToLowerInvar
 $archiveVersion = $spireVersion
 $archiveUrl = "https://github.com/spiffe/spire/releases/download/v$archiveVersion/spire-$archiveVersion-windows-x86_64.zip"
 $archiveName = Split-Path -Leaf $archiveUrl
-$archiveHash = '7feb3ec51e8aa09c182df008a26c7e3f48496cc9554aa66cc774d71fb2c6cd27'
+$archiveHash = 'dae884adadbd402ee86d261e2aeb4f878ebdb145e3fd18d239ad7bd34c3cd306'
 $archivePath = "$env:TEMP\$archiveName"
 Write-Host "Downloading spire-agent $archiveVersion..."
 (New-Object System.Net.WebClient).DownloadFile($archiveUrl, $archivePath)
