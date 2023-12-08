@@ -10,6 +10,31 @@ CONFIG_UBUNTU_AGENT_COUNT = 1   # max 5.
 CONFIG_WINDOWS_AGENT_COUNT = 1  # max 5.
 
 require 'ipaddr'
+require 'ostruct'
+
+CONFIG_UBUNTU_AGENTS = (0..CONFIG_UBUNTU_AGENT_COUNT-1).map do |i|
+  name = "uagent#{i}"
+  OpenStruct.new(
+    name: name,
+    hostname: "#{name}.#{CONFIG_DNS_DOMAIN}",
+    ip: IPAddr.new((IPAddr.new CONFIG_SERVER_IP).to_i + 1 + i, Socket::AF_INET).to_s,
+  )
+end
+
+CONFIG_WINDOWS_AGENTS = (0..CONFIG_WINDOWS_AGENT_COUNT-1).map do |i|
+  name = "wagent#{i}"
+  OpenStruct.new(
+    name: name,
+    hostname: name,
+    ip: IPAddr.new((IPAddr.new(CONFIG_SERVER_IP).to_i + 1 + 5 + i), Socket::AF_INET).to_s,
+  )
+end
+
+CONFIG_EXTRA_HOSTS = <<-EXTRA_HOSTS
+#{CONFIG_SERVER_IP} server.#{CONFIG_DNS_DOMAIN}
+#{CONFIG_UBUNTU_AGENTS.map { |agent| "#{agent.ip} #{agent.name}.#{CONFIG_DNS_DOMAIN}" }.join("\n")}
+#{CONFIG_WINDOWS_AGENTS.map { |agent| "#{agent.ip} #{agent.name}.#{CONFIG_DNS_DOMAIN}" }.join("\n")}
+EXTRA_HOSTS
 
 Vagrant.configure('2') do |config|
   config.vm.box = 'ubuntu-22.04-amd64'
@@ -29,30 +54,22 @@ Vagrant.configure('2') do |config|
       ip: CONFIG_SERVER_IP,
       libvirt__dhcp_enabled: false,
       libvirt__forward_mode: 'none'
-    config.vm.provision :shell, path: 'provision-base.sh'
+    config.vm.provision :shell, path: 'provision-base.sh', args: [CONFIG_EXTRA_HOSTS]
     config.vm.provision :shell, path: 'provision-go.sh'
     config.vm.provision :shell, path: 'provision-devid-provisioning-server.sh'
     config.vm.provision :shell, path: 'provision-spire-server.sh', args: [CONFIG_SPIRE_VERSION, CONFIG_UBUNTU_AGENT_COUNT, CONFIG_WINDOWS_AGENT_COUNT]
   end
 
-  (0..CONFIG_UBUNTU_AGENT_COUNT-1).each_with_index do |o, i|
-    name = "uagent#{i}"
-    ip = IPAddr.new((IPAddr.new CONFIG_SERVER_IP).to_i + 1 + i, Socket::AF_INET).to_s
-    config.vm.define name do |config|
-      config.vm.hostname = "#{name}.#{CONFIG_DNS_DOMAIN}"
+  CONFIG_UBUNTU_AGENTS.each do |agent|
+    config.vm.define agent.name do |config|
+      config.vm.hostname = agent.hostname
       config.vm.provider :libvirt do |lv, config|
         lv.tpm_type = 'emulator'
         lv.tpm_model = 'tpm-crb'
         lv.tpm_version = '2.0'
       end
-      config.vm.network :private_network, ip: ip
-      config.vm.provision :hosts do |hosts|
-        hosts.autoconfigure = true
-        hosts.sync_hosts = true
-        hosts.add_localhost_hostnames = false
-        hosts.add_host CONFIG_SERVER_IP, ["server.#{CONFIG_DNS_DOMAIN}"]
-      end
-      config.vm.provision :shell, path: 'provision-base.sh'
+      config.vm.network :private_network, ip: agent.ip
+      config.vm.provision :shell, path: 'provision-base.sh', args: [CONFIG_EXTRA_HOSTS]
       config.vm.provision :shell, path: 'provision-docker.sh'
       config.vm.provision :shell, path: 'provision-docker-compose.sh'
       config.vm.provision :shell, path: 'provision-devid-provisioning-agent.sh'
@@ -60,12 +77,10 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  (0..CONFIG_WINDOWS_AGENT_COUNT-1).each_with_index do |o, i|
-    name = "wagent#{i}"
-    ip = IPAddr.new((IPAddr.new CONFIG_SERVER_IP).to_i + 1 + 5 + i, Socket::AF_INET).to_s
-    config.vm.define name do |config|
+  CONFIG_WINDOWS_AGENTS.each do |agent|
+    config.vm.define agent.name do |config|
       config.vm.box = 'windows-2022-amd64'
-      config.vm.hostname = name
+      config.vm.hostname = agent.hostname
       config.vm.provider :libvirt do |lv, config|
         lv.memory = 3*1024
         lv.tpm_type = 'emulator'
@@ -73,15 +88,9 @@ Vagrant.configure('2') do |config|
         lv.tpm_version = '2.0'
         config.vm.synced_folder '.', '/vagrant', type: 'smb', smb_username: ENV['USER'], smb_password: ENV['VAGRANT_SMB_PASSWORD']
       end
-      config.vm.network :private_network, ip: ip
-      config.vm.provision :hosts do |hosts|
-        hosts.autoconfigure = true
-        hosts.sync_hosts = true
-        hosts.add_localhost_hostnames = false
-        hosts.add_host CONFIG_SERVER_IP, ["server.#{CONFIG_DNS_DOMAIN}"]
-      end
+      config.vm.network :private_network, ip: agent.ip
       config.vm.provision :shell, path: 'windows/ps.ps1', args: 'provision-chocolatey.ps1'
-      config.vm.provision :shell, path: 'windows/ps.ps1', args: 'provision-base.ps1'
+      config.vm.provision :shell, path: 'windows/ps.ps1', args: ['provision-base.ps1', CONFIG_EXTRA_HOSTS]
       config.vm.provision :shell, path: 'windows/ps.ps1', args: ['provision-spire-agent.ps1', CONFIG_SPIRE_VERSION]
     end
   end

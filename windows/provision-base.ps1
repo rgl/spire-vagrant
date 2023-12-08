@@ -1,3 +1,10 @@
+param(
+    [string]$extraHosts
+)
+
+# set the extra hosts.
+Add-Content -Encoding ascii c:\windows\system32\drivers\etc\hosts $extraHosts
+
 # set keyboard layout.
 # NB you can get the name from the list:
 #      [Globalization.CultureInfo]::GetCultures('InstalledWin32Cultures') | Out-GridView
