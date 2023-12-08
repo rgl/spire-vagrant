@@ -1,7 +1,7 @@
 #!/bin/bash
 source /vagrant/lib.sh
 
-spire_version="${1:-1.5.5}"; shift || true
+spire_version="${1:-1.8.5}"; shift || true
 ubuntu_agent_count="${1:-1}"; shift || true
 windows_agent_count="${1:-1}"; shift || true
 trust_domain="$(hostname --domain)"
@@ -30,7 +30,7 @@ adduser \
 install -d -o spire-server -g spire-server -m 750 /opt/spire-server
 
 # download and install.
-spire_url="https://github.com/spiffe/spire/releases/download/v$spire_version/spire-$spire_version-linux-x86_64-glibc.tar.gz"
+spire_url="https://github.com/spiffe/spire/releases/download/v$spire_version/spire-$spire_version-linux-amd64-musl.tar.gz"
 spire_tgz="/vagrant/share/$(basename "$spire_url")"
 if [ ! -f "$spire_tgz" ]; then
     wget -qO "$spire_tgz" "$spire_url"
