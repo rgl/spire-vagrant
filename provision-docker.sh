@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 # see https://github.com/moby/moby/releases
-docker_version='23.0.1'
+docker_version='24.0.7'
 
 # prevent apt-get et al from asking questions.
 # NB even with this, you'll still get some warnings that you can ignore:
@@ -15,8 +15,8 @@ apt-get update
 # install docker.
 # see https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-using-the-repository
 apt-get install -y apt-transport-https software-properties-common
-wget -qO- https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+wget -qO- https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/download.docker.com.gpg
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/download.docker.com.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" >/etc/apt/sources.list.d/docker.list
 apt-get update
 apt-cache madison docker-ce
 docker_version="$(apt-cache madison docker-ce | awk "/$docker_version/{print \$3}")"
