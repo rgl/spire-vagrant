@@ -129,4 +129,4 @@ openssl s_client -connect localhost:8443 -servername $trust_domain </dev/null 2>
   * [TPM 2.0 Keys for Device Identity and Attestation](https://trustedcomputinggroup.org/wp-content/uploads/TCG_IWG_DevID_v1r2_02dec2020.pdf)
   * [devid-provisioning-tool](https://github.com/HewlettPackard/devid-provisioning-tool)
 * [Docker Workload Attestor](https://github.com/spiffe/spire/blob/v1.8.5/doc/plugin_agent_workloadattestor_docker.md)
-* [go-spiffe spiffe-http example](https://github.com/spiffe/go-spiffe/tree/v2.1.2/v2/examples/spiffe-http)
+* [go-spiffe spiffe-http example](https://github.com/spiffe/go-spiffe/tree/v2.1.6/v2/examples/spiffe-http)

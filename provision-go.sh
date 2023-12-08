@@ -4,8 +4,8 @@ set -euxo pipefail
 # install go.
 # see https://go.dev/dl/
 # see https://go.dev/doc/install
-artifact_url=https://go.dev/dl/go1.19.6.linux-amd64.tar.gz
-artifact_sha=e3410c676ced327aec928303fef11385702a5562fd19d9a1750d5a2979763c3d
+artifact_url=https://go.dev/dl/go1.21.5.linux-amd64.tar.gz
+artifact_sha=e2bc0b3e4b64111ec117295c088bde5f00eeed1567999ff77bc859d7df70078e
 artifact_path="/tmp/$(basename $artifact_url)"
 wget -qO $artifact_path $artifact_url
 if [ "$(sha256sum $artifact_path | awk '{print $1}')" != "$artifact_sha" ]; then

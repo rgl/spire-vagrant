@@ -1,12 +1,12 @@
 #syntax=docker/dockerfile:1.4
-FROM golang:1.19.6-bullseye AS build
+FROM golang:1.21.5-bookworm AS build
 WORKDIR /build
 COPY go.* ./
 RUN go mod download
 COPY *.go ./
 RUN CGO_ENABLED=0 go build -ldflags="-s"
 
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 RUN <<EOF
 apt-get update
 apt-get install -y --no-install-recommends \
