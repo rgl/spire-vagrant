@@ -1,5 +1,5 @@
 param(
-    $spireVersion='1.8.5'
+    $spireVersion='1.8.6'
 )
 
 $serviceName = "spire-agent"

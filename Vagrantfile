@@ -3,7 +3,7 @@
 ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 
 # see https://github.com/spiffe/spire/releases
-CONFIG_SPIRE_VERSION = '1.8.5'
+CONFIG_SPIRE_VERSION = '1.8.6'
 CONFIG_DNS_DOMAIN = 'spire.test'
 CONFIG_SERVER_IP = '10.10.0.2'
 CONFIG_UBUNTU_AGENT_COUNT = 1   # max 5.
