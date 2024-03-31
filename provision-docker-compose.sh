@@ -3,7 +3,7 @@ set -euxo pipefail
 
 # see https://github.com/docker/compose/releases
 # renovate: datasource=github-releases depName=docker/compose
-docker_compose_version='2.23.3'
+docker_compose_version='2.26.1'
 
 # download.
 # see https://github.com/docker/compose/releases
