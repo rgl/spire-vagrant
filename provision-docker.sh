@@ -2,6 +2,7 @@
 set -euxo pipefail
 
 # see https://github.com/moby/moby/releases
+# renovate: datasource=github-releases depName=moby/moby
 docker_version='24.0.7'
 
 # prevent apt-get et al from asking questions.

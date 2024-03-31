@@ -110,6 +110,13 @@ trust_domain="$(hostname --domain)"
 openssl s_client -connect localhost:8443 -servername $trust_domain </dev/null 2>/dev/null | openssl x509 -noout -text
 ```
 
+List this repository dependencies (and which have newer versions):
+
+```bash
+export GITHUB_COM_TOKEN='YOUR_GITHUB_PERSONAL_TOKEN'
+./renovate.sh
+```
+
 # Notes
 
 * The initial SPIFFE trust bundle must be distributed to the nodes using some out-of-band method.

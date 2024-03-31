@@ -1,12 +1,14 @@
 #!/bin/bash
 set -euxo pipefail
 
-docker_compose_version="${1:-v2.23.3}"; shift || true
+# see https://github.com/docker/compose/releases
+# renovate: datasource=github-releases depName=docker/compose
+docker_compose_version='2.23.3'
 
 # download.
 # see https://github.com/docker/compose/releases
 # see https://docs.docker.com/compose/cli-command/#install-on-linux
-docker_compose_url="https://github.com/docker/compose/releases/download/$docker_compose_version/docker-compose-linux-$(uname -m)"
+docker_compose_url="https://github.com/docker/compose/releases/download/v$docker_compose_version/docker-compose-linux-$(uname -m)"
 wget -qO /tmp/docker-compose "$docker_compose_url"
 
 # install.

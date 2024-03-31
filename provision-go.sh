@@ -4,7 +4,10 @@ set -euxo pipefail
 # install go.
 # see https://go.dev/dl/
 # see https://go.dev/doc/install
-artifact_url=https://go.dev/dl/go1.21.5.linux-amd64.tar.gz
+# see https://github.com/golang/go/tags
+# renovate: datasource=github-tags depName=golang/go extractVersion=go(?<version>.+)
+artifact_version='1.21.5'
+artifact_url=https://go.dev/dl/go$artifact_version.linux-amd64.tar.gz
 artifact_sha=e2bc0b3e4b64111ec117295c088bde5f00eeed1567999ff77bc859d7df70078e
 artifact_path="/tmp/$(basename $artifact_url)"
 wget -qO $artifact_path $artifact_url

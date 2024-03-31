@@ -4,7 +4,8 @@ source /vagrant/lib.sh
 # see https://github.com/HewlettPackard/devid-provisioning-tool/commits
 devid_provisioning_version="${1:-b912ef2c19571093dfacd0a6721dd1e6f6299768}"; shift || true
 # see https://github.com/cloudflare/cfssl/releases
-cfssl_version="${1:-1.6.4}"; shift || true
+# renovate: datasource=github-releases depName=cloudflare/cfssl
+cfssl_version='1.6.4'
 trust_domain="$(hostname --domain)"
 
 # echo the executed commands to stderr.
