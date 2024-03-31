@@ -1,5 +1,5 @@
 param(
-    $spireVersion='1.8.6'
+    $spireVersion='1.9.2'
 )
 
 $serviceName = "spire-agent"
@@ -53,7 +53,15 @@ while ((&"$agentHome\bin\spire-agent" healthcheck) -ne 'Agent is healthy.') {
 }
 
 Write-Host "Showing the spire-agent SVID..."
-openssl x509 -inform der -in "$agentHome\data\agent_svid.der" -text -noout
+$agentData = Get-Content -Raw "$agentHome\data\agent-data.json" | ConvertFrom-Json
+$agentData.svid | ForEach-Object {
+    [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($_)) `
+        | openssl x509 -inform pem -text -noout
+}
 
 Write-Host "Showing the spire-agent bundle..."
-openssl x509 -inform der -in "$agentHome\data\bundle.der" -text -noout
+$agentData = Get-Content -Raw "$agentHome\data\agent-data.json" | ConvertFrom-Json
+$agentData.bundle | ForEach-Object {
+    [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($_)) `
+        | openssl x509 -inform pem -text -noout
+}

@@ -1,7 +1,7 @@
 #!/bin/bash
 source /vagrant/lib.sh
 
-spire_version="${1:-1.8.6}"; shift || true
+spire_version="${1:-1.9.2}"; shift || true
 
 # change to the home directory.
 cd ~
@@ -55,5 +55,11 @@ systemctl restart spire-agent
 bash -euo pipefail -c "while [ \"\$(spire-agent healthcheck 2>/dev/null)\" != 'Agent is healthy.' ]; do sleep 1; done"
 
 # show the spire-agent SVID.
-openssl x509 -inform der -in /opt/spire-agent/data/agent_svid.der -text -noout
-openssl x509 -inform der -in /opt/spire-agent/data/bundle.der -text -noout
+jq -r '.svid[]' </opt/spire-agent/data/agent-data.json | while read svid; do
+    base64 -d <<<"$svid" | openssl x509 -inform pem -text -noout
+done
+
+# show the spire-agent bundle.
+jq -r '.bundle[]' </opt/spire-agent/data/agent-data.json | while read bundle; do
+    base64 -d <<<"$bundle" | openssl x509 -inform pem -text -noout
+done
