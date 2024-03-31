@@ -1,6 +1,6 @@
 module server
 
-go 1.21
+go 1.22
 
 require github.com/spiffe/go-spiffe/v2 v2.1.6
 
